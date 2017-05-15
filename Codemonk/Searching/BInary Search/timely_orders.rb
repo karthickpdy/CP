@@ -1,0 +1,62 @@
+def pred(mid,target)
+    mid >= target # Should return false for all lower values and true for all higher values
+end
+def binsearch_lb(nums,target)
+    # false false true true true - FIRST TRUE value for which the predicate matches is lower bound
+    l = 0
+    r = nums.length - 1
+    while l < r
+        mid = l + (r-l) / 2
+        if pred(nums[mid],target)
+            r = mid # Found a true value..search in the range for the lowest true value
+        else
+            l = mid + 1 # l cannot be mid as it is false
+        end
+    end
+    pred(nums[l],target) ? l : l  + 1
+end
+
+def pred_ub(mid,target)
+    mid <= target # Should return true for all lower values and false for all higher values
+end
+def binsearch_ub(nums,target)
+    # true true false false false- find the LAST TRUE value for which predicate matches
+    l = 0
+    r = nums.length - 1
+    while l < r
+        mid = l + (r-l+1) / 2
+        if pred_ub(nums[mid],target)
+            l = mid # Found true value, true to find the last by moving(cannot move to mid + 1 as this mid may be last value )
+        else
+            r = mid - 1 # false value found, shrink the range and ignore the false value
+        end
+    end
+    !pred_ub(nums[l],target) || nums[l] == target ? l : l + 1
+end
+
+q = gets.to_i
+weights = {}
+sum_arr = {}
+q.times do
+	type,x,t = gets.split(" ").map(&:to_i)
+	if type == 1
+		# puts "type #{type} #{t} #{x}"
+		weights[t] = x
+	else
+		a = t-x
+		b = t
+		keys = weights.keys
+		i,j = binsearch_lb(keys,a),binsearch_ub(keys,b)
+		# puts "#{i} #{j}"
+		sum = 0
+		keys[i..j].each do |k| 
+			# puts "k #{k} #{weights[k]}"
+			sum += weights[k]
+		end
+		puts sum
+		# puts "keys #{keys[i..j]}"
+		# puts "#{weights}"
+			
+		
+	end
+end
